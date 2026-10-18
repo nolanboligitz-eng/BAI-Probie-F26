@@ -17,8 +17,9 @@ Why use models?
 - Type safety: Prevent invalid data from being created
 """
 
-from pydantic import BaseModel
 from typing import Literal
+
+from pydantic import BaseModel
 
 
 # TODO: Create a ChatMessage Pydantic model
@@ -34,5 +35,5 @@ from typing import Literal
 # We use Literal to restrict role to exactly: "user", "assistant", or "system"
 #
 class ChatMessage(BaseModel):
-    change_this_variables: str
-
+    role: Literal["user", "assistant", "system"]
+    content: str

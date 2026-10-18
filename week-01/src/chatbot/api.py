@@ -11,15 +11,14 @@ Key Concepts:
 - Pure functions: Given the same input, always return the same output
 - Type hints: Declare what types go in and what comes out
 - Error handling: Gracefully handle things that can go wrong
+
 """
 
 from openai import OpenAI
-from typing import List
 
-from src.settings import settings
 from src.chatbot.constants import SYSTEM_PROMPT
 from src.chatbot.models import ChatMessage
-
+from src.settings import Settings
 
 # TODO: Implement create_client function
 # This function creates and returns an OpenAI client object.
@@ -39,6 +38,12 @@ from src.chatbot.models import ChatMessage
 #
 # Your code here:
 # def create_client() -> ...:
+
+
+def create_client(settings: Settings) -> OpenAI:
+    """Create and return on Open AI client."""
+    client = OpenAI(api_key=settings.OPENAI_API_KEY)
+    return client
 
 
 # TODO: Implement get_chat_response function
@@ -70,13 +75,13 @@ from src.chatbot.models import ChatMessage
 #     try:
 #         # Convert messages to dicts
 #         message_dicts = [msg.model_dump() for msg in messages]
-#         
+#
 #         # Call OpenAI API
 #         response = client.chat.completions.create(...)
-#         
+#
 #         # Extract the assistant's message
 #         assistant_message = response.choices[0].message
-#         
+#
 #         # Create and return ChatMessage
 #         return ChatMessage(
 #             role=assistant_message.role,
@@ -89,6 +94,44 @@ from src.chatbot.models import ChatMessage
 #         raise
 #
 # Your code here:
+
+
+def create_system_message() -> ChatMessage:
+    """Create a system message with the chatbot's instructions."""
+    return ChatMessage(
+        role="system",
+        content=SYSTEM_PROMPT,
+    )
+
+
+def get_chat_response(
+    client: OpenAI,
+    messages: list[ChatMessage],
+    model: str,
+) -> ChatMessage:
+    """Send conversation messages to OpenAI and return the assistant's reply."""
+    try:
+        # Convert messages into dictionaries
+        message_dicts = [msg.model_dump() for msg in messages]
+
+        # Call the OpenAI API
+        response = client.chat.completions.create(
+            model=model,
+            messages=message_dicts,
+        )
+
+        # Extract the assistant's response
+        assistant_message = response.choices[0].message
+
+        # Return the reply as a ChatMessage
+        return ChatMessage(
+            role=assistant_message.role,
+            content=assistant_message.content or "",
+        )
+
+    except Exception as e:
+        print(f"Error calling OpenAI API: {e}")
+        raise
 
 
 # TODO: Implement create_system_message function (Helper Function)
@@ -105,4 +148,3 @@ from src.chatbot.models import ChatMessage
 #   system_msg = create_system_message()
 #
 # Your code here:
-
