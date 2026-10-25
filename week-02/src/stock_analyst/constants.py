@@ -88,5 +88,5 @@ Keep your tone friendly, educational, and accessible to first-year college stude
 # Time periods for stock data
 # These define how far back to look when fetching historical data
 VALID_PERIODS = Literal["1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "max"]
-DEFAULT_PERIOD: str = "1mo"  # Default to 1 month of data
+DEFAULT_PERIOD: str = "3mo"  # Default to 1 month of data
 
