@@ -15,9 +15,9 @@ class EmbeddingService:
         """
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                "https://openrouter.ai/api/v1/embeddings",
+                "https://api.openai.com/v1/embeddings",
                 headers={
-                    "Authorization": f"Bearer {settings.OPENROUTER_API_KEY}",
+                    "Authorization": f"Bearer {settings.OPENAI_API_KEY}",
                     "Content-Type": "application/json",
                 },
                 json={"model": settings.OPENAI_EMBEDDING_MODEL, "input": text},

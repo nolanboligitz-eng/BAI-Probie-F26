@@ -42,7 +42,9 @@ async def perform_rag(context: RunContext[RAGAgentDependencies], query: str) -> 
     - Return the formatted string
     - Call this tool at most once per agent run
     """
-    raise NotImplementedError("TODO: implement perform_rag()")
+    results = await context.deps.vector_db.query(query)
+    formatted = await context.deps.vector_db.format_query_results(results)
+    return formatted
 
 
 async def run_rag_agent(query: str) -> RAGAgentOutput:

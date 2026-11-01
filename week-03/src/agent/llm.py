@@ -1,9 +1,9 @@
 from pydantic_ai.models.openai import OpenAIChatModel
-from pydantic_ai.providers.openrouter import OpenRouterProvider
+from pydantic_ai.providers.openai import OpenAIProvider
 
 from src.settings import settings
 
 llm = OpenAIChatModel(
     settings.OPENAI_MODEL,
-    provider=OpenRouterProvider(api_key=settings.OPENROUTER_API_KEY),
+    provider=OpenAIProvider(api_key=settings.OPENAI_API_KEY),
 )

@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
 import chromadb
+import asyncio
+import uuid
 
 from src.services.embedding.service import EmbeddingService
 
@@ -39,37 +41,43 @@ class VectorDatabaseService:
         - Add to `self.vector_db_collection` with ids, documents, embeddings
         - Return the generated id as a string
         """
-        raise NotImplementedError("TODO: implement VectorDatabaseService.add_fact()")
+        fact_id = str(uuid.uuid4())
+
+        embedding = await self.embedding_service.generate_embedding(text)
+
+        await asyncio.to_thread(
+            self.vector_db_collection.add,
+            ids=[fact_id],
+            documents=[text],
+            embeddings=[embedding],
+        )
+
+        return fact_id
 
     async def query(self, query_text: str, n_results: int = 10) -> Dict[str, Any]:
-        """
-        TODO: Query the vector database for similar documents.
+        embedding = await self.embedding_service.generate_embedding(query_text)
 
-        Requirements:
-        - Generate an embedding for `query_text`
-        - Call `self.vector_db_collection.query(...)` with:
-          - query_embeddings=[the embedding]
-          - n_results=n_results
-          - include=["documents", "distances"]
-        - Return the result dict
-        """
-        raise NotImplementedError("TODO: implement VectorDatabaseService.query()")
+        results = await asyncio.to_thread(
+            self.vector_db_collection.query,
+            query_embeddings=[embedding],
+            n_results=n_results,
+            include=["documents", "distances"],
+        )
+
+        return results
 
     async def format_query_results(self, query_result: chromadb.QueryResult) -> str:
-        """
-        TODO: Format query results into a string the LLM can consume.
+        documents = query_result.get("documents") or []
 
-        Requirements:
-        - If there are no documents, return "No relevant documents found."
-        - Otherwise, produce:
-          "Relevant documents from the knowledge base:\n\n"
-          followed by one block per document:
-          <fact_1>\n{doc}\n</fact_1>\n\n
-        - Return the final string (strip trailing whitespace)
-        """
-        raise NotImplementedError(
-            "TODO: implement VectorDatabaseService.format_query_results()"
-        )
+        if not documents or not documents[0]:
+            return "No relevant documents found."
+
+        formatted = "Relevant documents from the knowledge base:\n\n"
+
+        for index, doc in enumerate(documents[0], start=1):
+            formatted += f"<fact_{index}>\n{doc}\n</fact_{index}>\n\n"
+
+        return formatted.strip()
 
     def clear(self) -> None:
         """Delete all facts from the vector database."""

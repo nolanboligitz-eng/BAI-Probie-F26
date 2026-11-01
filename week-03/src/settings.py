@@ -22,7 +22,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from src.utils.filesystem import get_project_root
 
-ValidLLMModel = Literal["openai/gpt-4o-mini"]
+ValidLLMModel = Literal["gpt-4o-mini"]
 
 
 class Settings(BaseSettings):
@@ -30,9 +30,9 @@ class Settings(BaseSettings):
     Application settings loaded from environment variables.
     """
 
-    OPENROUTER_API_KEY: str
-    OPENAI_MODEL: ValidLLMModel = "openai/gpt-4o-mini"
-    OPENAI_EMBEDDING_MODEL: str = "openai/text-embedding-3-small"
+    OPENAI_API_KEY: str
+    OPENAI_MODEL: ValidLLMModel = "gpt-4o-mini"
+    OPENAI_EMBEDDING_MODEL: str = "text-embedding-3-small"
 
     # Configuration for Pydantic Settings
     # This tells it to look for a .env file in the project root
